@@ -5,26 +5,27 @@ import "../../App.css";
 
 export default function Invoice2() {
   const [formData, setFormData] = useState({
-    name: "",
-    address: "",
-    email: "",
-    phone: "",
-    educationSchool: "",
-    educationLocation: "",
-    educationDegree: "",
-    educationDate: "",
-    thesis: "",
-    coursework: "",
-    experiences: [
-      { org: "", location: "", title: "", date: "", bullet1: "", bullet2: "" }
-    ],
-    leadership: [
-      { org: "", location: "", role: "", date: "", bullet1: "", bullet2: "" }
-    ],
-    skills: "",
-    languages: "",
-    interests: "",
-  });
+  name: "",
+  address: "",
+  email: "",
+  phone: "",
+  educationSchool: "",
+  educationLocation: "",
+  educationDegree: "",
+  educationDate: "",
+  thesis: "",
+  coursework: "",
+  experiences: [
+    { org: "", location: "", title: "", date: "", bullets: [""] } // array of bullets
+  ],
+  leadership: [
+    { org: "", location: "", role: "", date: "", bullets: [""] } // array of bullets
+  ],
+  skills: "",
+  languages: "",
+  interests: "",
+});
+
 
   const [pdfData, setPdfData] = useState(formData);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +36,7 @@ export default function Invoice2() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleExperienceChange = (index: number, field: string, value: string) => {
+  const handleExperienceChange = (index: number, field: string, value: string | string[]) => {
     setFormData((prev) => {
       const newExperiences = [...prev.experiences];
       newExperiences[index] = { ...newExperiences[index], [field]: value };
@@ -43,7 +44,7 @@ export default function Invoice2() {
     });
   };
 
-  const handleLeadershipChange = (index: number, field: string, value: string) => {
+  const handleLeadershipChange = (index: number, field: string, value: string | string[]) => {
     setFormData((prev) => {
       const newLeadership = [...prev.leadership];
       newLeadership[index] = { ...newLeadership[index], [field]: value };
@@ -54,15 +55,47 @@ export default function Invoice2() {
   const addExperience = () => {
     setFormData((prev) => ({
       ...prev,
-      experiences: [...prev.experiences, { org: "", location: "", title: "", date: "", bullet1: "", bullet2: "" }],
+      experiences: [...prev.experiences, { org: "", location: "", title: "", date: "", bullets: [""] }],
     }));
   };
 
   const addLeadership = () => {
     setFormData((prev) => ({
       ...prev,
-      leadership: [...prev.leadership, { org: "", location: "", role: "", date: "", bullet1: "", bullet2: "" }],
+      leadership: [...prev.leadership, { org: "", location: "", role: "", date: "", bullets: [""] }],
     }));
+  };
+
+  const addBulletToExperience = (index: number) => {
+    setFormData((prev) => {
+      const newExperiences = [...prev.experiences];
+      newExperiences[index].bullets.push("");
+      return { ...prev, experiences: newExperiences };
+    });
+  };
+
+  const addBulletToLeadership = (index: number) => {
+    setFormData((prev) => {
+      const newLeadership = [...prev.leadership];
+      newLeadership[index].bullets.push("");
+      return { ...prev, leadership: newLeadership };
+    });
+  };
+
+  const deleteBulletFromExperience = (expIndex: number, bulletIndex: number) => {
+    setFormData((prev) => {
+      const newExperiences = [...prev.experiences];
+      newExperiences[expIndex].bullets.splice(bulletIndex, 1);
+      return { ...prev, experiences: newExperiences };
+    });
+  };
+
+  const deleteBulletFromLeadership = (leadIndex: number, bulletIndex: number) => {
+    setFormData((prev) => {
+      const newLeadership = [...prev.leadership];
+      newLeadership[leadIndex].bullets.splice(bulletIndex, 1);
+      return { ...prev, leadership: newLeadership };
+    });
   };
 
   // Update PDF and stop shimmer
@@ -114,8 +147,10 @@ export default function Invoice2() {
                   <Text style={{ fontWeight: "bold", fontSize: 12 }}>{exp.title}</Text>
                   <Text style={{ fontSize: 12 }}>{exp.date}</Text>
                 </View>
-                <Text style={styles.bullet}>• {exp.bullet1}</Text>
-                <Text style={styles.bullet}>• {exp.bullet2}</Text>
+                <button>add bullet</button>
+                {exp.bullets.map((bullet, bulletIndex) => (
+                  <Text key={bulletIndex} style={styles.bullet}>• {bullet}</Text>
+                ))}
               </View>
             ))}
           </View>
@@ -134,8 +169,10 @@ export default function Invoice2() {
                   <Text style={{ fontWeight: "bold", fontSize: 12 }}>{lead.role}</Text>
                   <Text style={{ fontSize: 12 }}>{lead.date}</Text>
                 </View>
-                <Text style={styles.bullet}>• {lead.bullet1}</Text>
-                <Text style={styles.bullet}>• {lead.bullet2}</Text>
+                 <button>add bullet</button>
+                {lead.bullets.map((bullet, bulletIndex) => (
+                  <Text key={bulletIndex} style={styles.bullet}>• {bullet}</Text>
+                ))}
               </View>
             ))}
           </View>
@@ -182,8 +219,17 @@ export default function Invoice2() {
             <input type="text" value={exp.location} onChange={(e) => handleExperienceChange(index, "location", e.target.value)} placeholder="Location" />
             <input type="text" value={exp.title} onChange={(e) => handleExperienceChange(index, "title", e.target.value)} placeholder="Position Title" />
             <input type="text" value={exp.date} onChange={(e) => handleExperienceChange(index, "date", e.target.value)} placeholder="Date" />
-            <textarea value={exp.bullet1} onChange={(e) => handleExperienceChange(index, "bullet1", e.target.value)} placeholder="Experience Point 1" />
-            <textarea value={exp.bullet2} onChange={(e) => handleExperienceChange(index, "bullet2", e.target.value)} placeholder="Experience Point 2" />
+            {exp.bullets.map((bullet, bulletIndex) => (
+              <div key={bulletIndex} style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                <textarea value={bullet} onChange={(e) => {
+                  const newBullets = [...exp.bullets];
+                  newBullets[bulletIndex] = e.target.value;
+                  handleExperienceChange(index, "bullets", newBullets);
+                }} placeholder={`Experience Point ${bulletIndex + 1}`} style={{ flex: 1 }} />
+                <button type="button" onClick={() => deleteBulletFromExperience(index, bulletIndex)} style={{ padding: "5px 10px", backgroundColor: "#ff4444", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>Delete</button>
+              </div>
+            ))}
+            <button type="button" onClick={() => addBulletToExperience(index)}>+ Add Bullet</button>
           </div>
         ))}
         <button type="button" onClick={addExperience}>Add More Experience</button>
@@ -197,8 +243,17 @@ export default function Invoice2() {
             <input type="text" value={lead.location} onChange={(e) => handleLeadershipChange(index, "location", e.target.value)} placeholder="Location" />
             <input type="text" value={lead.role} onChange={(e) => handleLeadershipChange(index, "role", e.target.value)} placeholder="Role" />
             <input type="text" value={lead.date} onChange={(e) => handleLeadershipChange(index, "date", e.target.value)} placeholder="Date" />
-            <textarea value={lead.bullet1} onChange={(e) => handleLeadershipChange(index, "bullet1", e.target.value)} placeholder="Leadership Point 1" />
-            <textarea value={lead.bullet2} onChange={(e) => handleLeadershipChange(index, "bullet2", e.target.value)} placeholder="Leadership Point 2" />
+            {lead.bullets.map((bullet, bulletIndex) => (
+              <div key={bulletIndex} style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                <textarea value={bullet} onChange={(e) => {
+                  const newBullets = [...lead.bullets];
+                  newBullets[bulletIndex] = e.target.value;
+                  handleLeadershipChange(index, "bullets", newBullets);
+                }} placeholder={`Leadership Point ${bulletIndex + 1}`} style={{ flex: 1 }} />
+                <button type="button" onClick={() => deleteBulletFromLeadership(index, bulletIndex)} style={{ padding: "5px 10px", backgroundColor: "#ff4444", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>Delete</button>
+              </div>
+            ))}
+            <button type="button" onClick={() => addBulletToLeadership(index)}>+ Add Bullet</button>
           </div>
         ))}
         <button type="button" onClick={addLeadership}>Add More Leadership</button>
