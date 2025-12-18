@@ -2,7 +2,7 @@
   "name": "cv-app",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://rocky123454321.github.io/Cv_maker_live",
+  "homepage": "https://rocky123454321.github.io/Cv_maker_Gen",
   "type": "module",
   "scripts": {
     "dev": "vite",
