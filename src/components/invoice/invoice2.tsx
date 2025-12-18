@@ -319,7 +319,7 @@ const [formData, setFormData] = useState({
        <input type="text" name="highSchoolLocation" value={formData.highSchoolLocation} onChange={handleChange} placeholder="City, Country" />
        <input type="text" name="highSchoolDate" value={formData.highSchoolDate} onChange={handleChange} placeholder="Graduation Date" />
        <input type="text" name="highSchoolDegree" value={formData.educationDegree} onChange={handleChange} placeholder="Degree / GPA" />
-       <input type="text" name="thesis" value={formData.thesis} onChange={handleChange} placeholder="Thesis" />
+       <input type="text" name="thesis" value={formData.thesis} onChange={handleChange} placeholder="Thesis (Optional)" />
        <input type="text" name="coursework" value={formData.coursework} onChange={handleChange} placeholder="Relevant Coursework" />
        <h3>Experience</h3>
        {formData.experiences.map((exp, index) => (
