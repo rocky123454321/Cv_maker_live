@@ -5,32 +5,30 @@ import "../../App.css";
 
 export default function Invoice2() {
   const [formData, setFormData] = useState({
-  name: "",
-  address: "",
-  email: "",
-  phone: "",
-  educationSchool: "",
-  educationLocation: "",
-  educationDegree: "",
-  educationDate: "",
-  thesis: "",
-  coursework: "",
-  experiences: [
-    { org: "", location: "", title: "", date: "", bullets: [""] } // array of bullets
-  ],
-  leadership: [
-    { org: "", location: "", role: "", date: "", bullets: [""] } // array of bullets
-  ],
-  skills: "",
-  languages: "",
-  interests: "",
-});
-
+    name: "",
+    address: "",
+    email: "",
+    phone: "",
+    educationSchool: "",
+    educationLocation: "",
+    educationDegree: "",
+    educationDate: "",
+    thesis: "",
+    coursework: "",
+    experiences: [
+      { org: "", location: "", title: "", date: "", bullets: [""] }
+    ],
+    leadership: [
+      { org: "", location: "", role: "", date: "", bullets: [""] }
+    ],
+    skills: "",
+    languages: "",
+    interests: "",
+  });
 
   const [pdfData, setPdfData] = useState(formData);
   const [isLoading, setIsLoading] = useState(true);
 
-  // update form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -69,7 +67,9 @@ export default function Invoice2() {
   const addBulletToExperience = (index: number) => {
     setFormData((prev) => {
       const newExperiences = [...prev.experiences];
-      newExperiences[index].bullets.push("");
+      if (newExperiences[index].bullets.length < 5) {
+        newExperiences[index].bullets.push("");
+      }
       return { ...prev, experiences: newExperiences };
     });
   };
@@ -77,12 +77,15 @@ export default function Invoice2() {
   const addBulletToLeadership = (index: number) => {
     setFormData((prev) => {
       const newLeadership = [...prev.leadership];
-      newLeadership[index].bullets.push("");
+      if (newLeadership[index].bullets.length < 5) {
+        newLeadership[index].bullets.push("");
+      }
       return { ...prev, leadership: newLeadership };
     });
   };
 
   const deleteBulletFromExperience = (expIndex: number, bulletIndex: number) => {
+    if (bulletIndex === 0) return;
     setFormData((prev) => {
       const newExperiences = [...prev.experiences];
       newExperiences[expIndex].bullets.splice(bulletIndex, 1);
@@ -91,6 +94,7 @@ export default function Invoice2() {
   };
 
   const deleteBulletFromLeadership = (leadIndex: number, bulletIndex: number) => {
+    if (bulletIndex === 0) return;
     setFormData((prev) => {
       const newLeadership = [...prev.leadership];
       newLeadership[leadIndex].bullets.splice(bulletIndex, 1);
@@ -98,26 +102,21 @@ export default function Invoice2() {
     });
   };
 
-  // Update PDF and stop shimmer
   const handleUpdatePDF = () => {
     setPdfData(formData);
     setIsLoading(false);
   };
 
-  // Memoized PDF
   const MemoizedPDF = useMemo(
     () => (
       <Document>
         <Page size="A4" style={styles.page}>
-          {/* Contact Info */}
           <View style={styles.section}>
             <Text style={styles.nameHeader}>{pdfData.name}</Text>
             <Text style={styles.contactInfo}>
               {pdfData.address} | {pdfData.email} | {pdfData.phone}
             </Text>
           </View>
-
-          {/* Education */}
           <View style={styles.section}>
             <Text style={styles.subHeader}>EDUCATION</Text>
             <View style={styles.line} />
@@ -129,11 +128,9 @@ export default function Invoice2() {
               <Text style={styles.entryDetails}>{pdfData.educationDegree}</Text>
               <Text style={{ fontSize: 12 }}>{pdfData.educationDate}</Text>
             </View>
-            <Text style={styles.entryDetails}>Thesis: {pdfData.thesis}</Text>
+            {pdfData.thesis && <Text style={styles.entryDetails}>Thesis: {pdfData.thesis}</Text>}
             <Text style={styles.entryDetails}>Relevant Coursework: {pdfData.coursework}</Text>
           </View>
-
-          {/* Experience */}
           <View style={styles.section}>
             <Text style={styles.subHeader}>EXPERIENCE</Text>
             <View style={styles.line} />
@@ -147,15 +144,12 @@ export default function Invoice2() {
                   <Text style={{ fontWeight: "bold", fontSize: 12 }}>{exp.title}</Text>
                   <Text style={{ fontSize: 12 }}>{exp.date}</Text>
                 </View>
-                <button>add bullet</button>
                 {exp.bullets.map((bullet, bulletIndex) => (
                   <Text key={bulletIndex} style={styles.bullet}>• {bullet}</Text>
                 ))}
               </View>
             ))}
           </View>
-
-          {/* Leadership */}
           <View style={styles.section}>
             <Text style={styles.subHeader}>LEADERSHIP & ACTIVITIES</Text>
             <View style={styles.line} />
@@ -169,15 +163,12 @@ export default function Invoice2() {
                   <Text style={{ fontWeight: "bold", fontSize: 12 }}>{lead.role}</Text>
                   <Text style={{ fontSize: 12 }}>{lead.date}</Text>
                 </View>
-                 <button>add bullet</button>
                 {lead.bullets.map((bullet, bulletIndex) => (
                   <Text key={bulletIndex} style={styles.bullet}>• {bullet}</Text>
                 ))}
               </View>
             ))}
           </View>
-
-          {/* Skills */}
           <View style={styles.section}>
             <Text style={styles.subHeader}>SKILLS & INTERESTS</Text>
             <View style={styles.line} />
@@ -194,14 +185,11 @@ export default function Invoice2() {
   return (
     <div className="container">
       <div className="form">
-        {/* Contact Info */}
         <h3>Contact Info</h3>
         <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Full Name (Surname, First Name M.)" />
         <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Address" />
         <input type="text" name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
         <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" />
-
-        {/* Education */}
         <h3>Education</h3>
         <input type="text" name="educationSchool" value={formData.educationSchool} onChange={handleChange} placeholder="School" />
         <input type="text" name="educationLocation" value={formData.educationLocation} onChange={handleChange} placeholder="Location" />
@@ -209,8 +197,6 @@ export default function Invoice2() {
         <input type="text" name="educationDate" value={formData.educationDate} onChange={handleChange} placeholder="Graduation Date" />
         <input type="text" name="thesis" value={formData.thesis} onChange={handleChange} placeholder="Thesis" />
         <input type="text" name="coursework" value={formData.coursework} onChange={handleChange} placeholder="Relevant Coursework" />
-
-        {/* Experience */}
         <h3>Experience</h3>
         {formData.experiences.map((exp, index) => (
           <div key={index} className="experience-block">
@@ -226,15 +212,20 @@ export default function Invoice2() {
                   newBullets[bulletIndex] = e.target.value;
                   handleExperienceChange(index, "bullets", newBullets);
                 }} placeholder={`Experience Point ${bulletIndex + 1}`} style={{ flex: 1 }} />
-                <button type="button" onClick={() => deleteBulletFromExperience(index, bulletIndex)} style={{ padding: "5px 10px", backgroundColor: "#ff4444", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>Delete</button>
+                <button type="button" onClick={() => deleteBulletFromExperience(index, bulletIndex)} disabled={bulletIndex === 0} style={{
+                  padding: "5px 10px",
+                  backgroundColor: bulletIndex === 0 ? "#ccc" : "#ff4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: bulletIndex === 0 ? "not-allowed" : "pointer"
+                }}>Delete</button>
               </div>
             ))}
             <button type="button" onClick={() => addBulletToExperience(index)}>+ Add Bullet</button>
           </div>
         ))}
         <button type="button" onClick={addExperience}>Add More Experience</button>
-
-        {/* Leadership */}
         <h3>Leadership & Activities</h3>
         {formData.leadership.map((lead, index) => (
           <div key={index} className="leadership-block">
@@ -250,24 +241,26 @@ export default function Invoice2() {
                   newBullets[bulletIndex] = e.target.value;
                   handleLeadershipChange(index, "bullets", newBullets);
                 }} placeholder={`Leadership Point ${bulletIndex + 1}`} style={{ flex: 1 }} />
-                <button type="button" onClick={() => deleteBulletFromLeadership(index, bulletIndex)} style={{ padding: "5px 10px", backgroundColor: "#ff4444", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>Delete</button>
+                <button type="button" onClick={() => deleteBulletFromLeadership(index, bulletIndex)} disabled={bulletIndex === 0} style={{
+                  padding: "5px 10px",
+                  backgroundColor: bulletIndex === 0 ? "#ccc" : "#ff4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: bulletIndex === 0 ? "not-allowed" : "pointer"
+                }}>Delete</button>
               </div>
             ))}
             <button type="button" onClick={() => addBulletToLeadership(index)}>+ Add Bullet</button>
           </div>
         ))}
         <button type="button" onClick={addLeadership}>Add More Leadership</button>
-
-        {/* Skills */}
         <h3>Skills & Interests</h3>
         <input type="text" name="skills" value={formData.skills} onChange={handleChange} placeholder="Technical Skills" />
         <input type="text" name="languages" value={formData.languages} onChange={handleChange} placeholder="Languages" />
         <input type="text" name="interests" value={formData.interests} onChange={handleChange} placeholder="Interests" />
-
         <button type="button" onClick={handleUpdatePDF}>Update PDF</button>
       </div>
-
-      {/* PDF Preview */}
       <div className="preview">
         {isLoading ? (
           <div className="shimmer-preview">
