@@ -15,12 +15,8 @@ export default function Invoice2() {
     educationDate: "",
     thesis: "",
     coursework: "",
-    experiences: [
-      { org: "", location: "", title: "", date: "", bullets: [""] }
-    ],
-    leadership: [
-      { org: "", location: "", role: "", date: "", bullets: [""] }
-    ],
+    experiences: [{ org: "", location: "", title: "", date: "", bullets: [""] }],
+    leadership: [{ org: "", location: "", role: "", date: "", bullets: [""] }],
     skills: "",
     languages: "",
     interests: "",
@@ -67,9 +63,7 @@ export default function Invoice2() {
   const addBulletToExperience = (index: number) => {
     setFormData((prev) => {
       const newExperiences = [...prev.experiences];
-      if (newExperiences[index].bullets.length < 5) {
-        newExperiences[index].bullets.push("");
-      }
+      if (newExperiences[index].bullets.length < 5) newExperiences[index].bullets.push("");
       return { ...prev, experiences: newExperiences };
     });
   };
@@ -77,9 +71,7 @@ export default function Invoice2() {
   const addBulletToLeadership = (index: number) => {
     setFormData((prev) => {
       const newLeadership = [...prev.leadership];
-      if (newLeadership[index].bullets.length < 5) {
-        newLeadership[index].bullets.push("");
-      }
+      if (newLeadership[index].bullets.length < 5) newLeadership[index].bullets.push("");
       return { ...prev, leadership: newLeadership };
     });
   };
@@ -103,6 +95,40 @@ export default function Invoice2() {
   };
 
   const handleUpdatePDF = () => {
+    const requiredFields = [
+      "name",
+      "address",
+      "email",
+      "phone",
+      "educationSchool",
+      "educationLocation",
+      "educationDegree",
+      "educationDate",
+      "coursework",
+      "skills",
+      "languages",
+      "interests",
+    ];
+
+    
+  for (const field of requiredFields) {
+    if (!formData[field as keyof typeof formData]) {
+      alert(`Please fill in the ${field} field.`);
+      return;
+    }
+  }
+    for (let i = 0; i < formData.experiences.length; i++) {
+      const exp = formData.experiences[i];
+      if (!exp.org || !exp.location || !exp.title || !exp.date) return;
+      if (!exp.bullets[0]?.trim()) return;
+    }
+
+    for (let i = 0; i < formData.leadership.length; i++) {
+      const lead = formData.leadership[i];
+      if (!lead.org || !lead.location || !lead.role || !lead.date) return;
+      if (!lead.bullets[0]?.trim()) return;
+    }
+
     setPdfData(formData);
     setIsLoading(false);
   };

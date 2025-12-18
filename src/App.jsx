@@ -34,7 +34,7 @@ export default function App() {
 
       <div className="invoice-container">
         {isUpdating ? (
-          // Shimmer placeholder
+        
           <div style={{ padding: "20px", border: "1px solid #ccc", width: "400px" }}>
             <Skeleton height={30} width={250} style={{ marginBottom: "10px" }} />
             <Skeleton height={20} width={350} style={{ marginBottom: "10px" }} />

@@ -205,17 +205,33 @@ form.css
   flex-direction: column;
   gap: 10px;
   padding: 20px;
-  border: 1px solid #ccc;
+  width: 100%;
+  height: 100%; /* Full height of parent preview */
+  box-sizing: border-box;
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
 }
 
-.shimmer-line,
-.shimmer-block {
+.shimmer-line {
+  width: 100%;
+  height: 16px;
   border-radius: 4px;
   background: linear-gradient(to right, #eeeeee 0%, #dddddd 50%, #eeeeee 100%);
-  background-size: 200% 100%;
+  background-size: 200% 100px;
   animation: shimmer 1.5s infinite;
 }
 
+.shimmer-block {
+  width: 100%;
+  flex: 1; /* Take remaining vertical space */
+  border-radius: 4px;
+  background: linear-gradient(to right, #eeeeee 0%, #dddddd 50%, #eeeeee 100%);
+  background-size: 200% 100px;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Shimmer animation */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -229,3 +245,22 @@ form.css
 }
 
 
+/* Mobile responsive: stack form on top */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: auto; /* Allow container to expand */
+  } .shimmer-preview {
+    height: 60vh; /* Adjust for mobile */
+  }
+
+  .form {
+    width: 100%; /* Form takes full width */
+    margin-bottom: 20px; /* Space below form */
+  }
+
+  .preview {
+    width: 100%; /* PDF preview full width */
+    height: 60vh; /* Adjust preview height on mobile */
+  }
+}
